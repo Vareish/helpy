@@ -1,0 +1,29 @@
+{
+  "name": "helpy",
+  "version": "0.1.0-alpha",
+  "description": "A discord bot focusing on support solutions",
+  "main": "index.js",
+  "repository": "https://github.com/Vareish/helpy.git",
+  "author": "Exehad",
+  "license": "MIT",
+  "private": false,
+  "scripts": {
+    "start": "node ./index.js",
+    "dev": "nodemon ./index.js",
+    "lint": "eslint ./index.js ./commands ./events",
+    "lint:fix": "eslint ./index.js ./commands ./events --fix"
+  },
+  "dependencies": {
+    "@discordjs/builders": "^0.15.0",
+    "@discordjs/rest": "^0.5.0",
+    "discord-api-types": "^0.35.0",
+    "discord.js": "^13.8.1",
+    "dotenv": "^16.0.1",
+    "mariadb": "^3.0.0",
+    "mysql": "^2.18.1",
+    "sqlite3": "^5.0.8"
+  },
+  "devDependencies": {
+    "eslint": "^8.18.0"
+  }
+}
