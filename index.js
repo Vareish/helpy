@@ -9,6 +9,7 @@ const path = require('node:path');
 const { Client, Collection, Intents } = require('discord.js');
 
 // Database setup
+// MariaDB
 const mariadb = require('mariadb');
 const pool = mariadb.createPool({
 	host: process.env.DB_IP,
@@ -30,6 +31,36 @@ async function testDB() {
 		});
 	conn.end();
 }
+// end
+async function tableCheck() {
+	switch (process.env.DB) {
+	case 'MariaDB':
+		conn = await pool.getConnection();
+		await conn.query('select * from information_schema.tables where table_name=' + 'h_servers')
+			.then(rows => {
+				console.log(rows);
+			})
+			.catch(err => {
+				if (err.errno == 1054) {
+					console.log('h_servers table not found, creating...');
+					conn.query(' CREATE TABLE h_servers ( has_setup CHAR(1), server_id CHAR(18) ) ');
+				}
+				else {
+					throw err;
+				}
+			});
+		break;
+	case 'MySQL':
+
+		break;
+	case 'SQLite':
+
+		break;
+	default:
+		throw Error('Invalid database! "' + process.env.DB + '"');
+	}
+}
+
 async function setupDB() {
 	switch (process.env.DB) {
 	case 'MariaDB':
@@ -42,7 +73,7 @@ async function setupDB() {
 
 		break;
 	default:
-		return (Error('Invalid database! ' + process.env.DB));
+		throw Error('Invalid database! "' + process.env.DB + '"');
 	}
 }
 async function setupClient() {
@@ -95,8 +126,10 @@ async function setupClient() {
 	});
 
 	// Login to Discord with your client's token
-	console.log('Checking Database');
+	console.log('Checking Database...');
 	await setupDB();
+	console.log('Checking Database Tables...');
+	await tableCheck();
 	client.login(process.env.TOKEN);
 }
 setupClient();
