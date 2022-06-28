@@ -23,9 +23,6 @@ let conn;
 async function testDB() {
 	conn = await pool.getConnection();
 	conn.ping()
-		.then(() => {
-			console.log('Database Connection successful');
-		})
 		.catch(err => {
 			throw err;
 		});
@@ -36,14 +33,11 @@ async function tableCheck() {
 	switch (process.env.DB) {
 	case 'MariaDB':
 		conn = await pool.getConnection();
-		await conn.query('select * from information_schema.tables where table_name=' + 'h_servers')
-			.then(rows => {
-				console.log(rows);
-			})
+		await conn.query('select * from h_servers')
 			.catch(err => {
-				if (err.errno == 1054) {
+				if (err.errno == 1146) {
 					console.log('h_servers table not found, creating...');
-					conn.query(' CREATE TABLE h_servers ( has_setup CHAR(1), server_id CHAR(18) ) ');
+					conn.query(' CREATE TABLE h_servers ( has_setupcmd CHAR(1), is_setup CHAR(1), server_id CHAR(18), server_name MEDIUMTEXT ) ');
 				}
 				else {
 					throw err;
@@ -130,6 +124,7 @@ async function setupClient() {
 	await setupDB();
 	console.log('Checking Database Tables...');
 	await tableCheck();
+	console.log('Database Connection successful');
 	client.login(process.env.TOKEN);
 }
 setupClient();
